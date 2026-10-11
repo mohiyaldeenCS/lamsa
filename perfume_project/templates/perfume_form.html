@@ -1,5 +1,27 @@
-{% extends "base.html" %}
-{% block title %}{{ title }} | لَمْسَة{% endblock %}
+{% extends 'base.html' %}
+{% from '_ui.html' import icon, field %}
+{% block title %}{{ title }} | لمسة{% endblock %}
 {% block content %}
-<section class="shell form-page"><a class="back-link" href="{{ url_for('admin') }}">→ العودة إلى لوحة الإدارة</a><div class="form-card"><div><p class="eyebrow">إدارة المجموعة</p><h1>{{ title }}</h1><p>{{ 'حدّث معلومات العطر، وسيظهر التغيير مباشرة في المتجر.' if editing else 'أدخل تفاصيل العطر الجديد ليظهر ضمن مجموعة لَمْسَة.' }}</p></div><form method="post" novalidate>{{ form.hidden_tag() }}<div class="form-two">{% for field in [form.name, form.brand] %}<div class="field">{{ field.label }}{{ field(class='input') }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}</div><div class="field">{{ form.description.label }}{{ form.description(class='input', rows=5, placeholder='مثال: ورد طائفي، زعفران، مسك أبيض') }}{% for error in form.description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div><div class="form-two">{% for field in [form.price, form.stock] %}<div class="field">{{ field.label }}{{ field(class='input') }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}</div><div class="form-actions"><a class="button secondary" href="{{ url_for('admin') }}">إلغاء</a>{{ form.submit(class='button primary') }}</div></form></div></section>
+<section class="shell form-page">
+  <a class="back-link" href="{{ url_for('admin') }}">{{ icon('arrow') }} العودة إلى لوحة الإدارة</a>
+  <div class="form-card">
+    <div><p class="eyebrow">إدارة المجموعة</p><h1>{{ title }}</h1><p>{{ 'حدّث معلومات العطر وتصنيفه وصورته.' if editing else 'أضف اكتشافًا جديدًا إلى المجموعة، مع تفاصيل واضحة وصورة مناسبة.' }}</p></div>
+    {% if editing %}<p class="product-sku">رمز المنتج <b dir="ltr">{{ perfume.sku }}</b></p>{% endif %}
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="form-two">{{ field(form.name) }}{{ field(form.brand) }}</div>
+      {{ field(form.description) }}
+      <div class="form-two">{{ field(form.category) }}{{ field(form.audience) }}</div>
+      <div class="form-two">{{ field(form.volume_ml) }}{{ field(form.price) }}</div>
+      {{ field(form.stock) }}
+      <fieldset class="image-picker"><legend>الصورة التوضيحية</legend><p>اختر إحدى الصور المحلية. الصور مشتركة بين عطور المجموعة للتوضيح.</p><div class="image-options">
+        {% for key, image in catalog_images.items() %}
+        <label><input type="radio" name="image_key" value="{{ key }}" {% if form.image_key.data == key %}checked{% endif %}><img src="{{ url_for('static', filename='images/' ~ image[1]) }}" alt="{{ image[0] }}" loading="lazy"><span>{{ image[0] }}</span></label>
+        {% endfor %}
+      </div>{% for error in form.image_key.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</fieldset>
+      <label class="featured-check">{{ form.featured() }}<span>{{ form.featured.label.text }}</span></label>
+      <div class="form-actions"><a class="button secondary" href="{{ url_for('admin') }}">إلغاء</a>{{ form.submit(class='button primary') }}</div>
+    </form>
+  </div>
+</section>
 {% endblock %}

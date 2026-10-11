@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from math import isfinite
-from wtforms import FloatField, HiddenField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import BooleanField, FloatField, HiddenField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, InputRequired, Length, NumberRange, Optional, Regexp, ValidationError
+
+from catalog import AUDIENCES, CATEGORIES, IMAGES, VOLUMES
 
 
 def trim(value):
@@ -48,6 +50,11 @@ class PerfumeForm(FlaskForm):
     description = TrimmedTextAreaField("الوصف والنوتات", validators=[DataRequired(message="أضف وصفًا موجزًا للعطر."), Length(max=5000)])
     price = FloatField("السعر (ر.س)", validators=[InputRequired(message="السعر مطلوب."), finite_price, NumberRange(min=0, max=1000000, message="أدخل سعرًا بين صفر ومليون.")])
     stock = IntegerField("المخزون", validators=[InputRequired(message="المخزون مطلوب."), NumberRange(min=0, max=1000000, message="أدخل مخزونًا بين صفر ومليون.")])
+    category = SelectField('العائلة العطرية', choices=list(CATEGORIES.items()), default='woody')
+    audience = SelectField('مناسب لـ', choices=list(AUDIENCES.items()), default='unisex')
+    volume_ml = SelectField('الحجم', choices=[(volume, f'{volume} مل') for volume in VOLUMES], coerce=int, default=100)
+    image_key = SelectField('الصورة التوضيحية', choices=[(key, value[0]) for key, value in IMAGES.items()], default='musk')
+    featured = BooleanField('عرض ضمن اختيارات الصفحة الرئيسية')
     submit = SubmitField("حفظ العطر")
 
 
@@ -66,7 +73,7 @@ class CheckoutForm(FlaskForm):
 
 
 class FragranceFinderForm(FlaskForm):
-    family = SelectField("أي نوتات تفضّل؟", choices=[('any', 'أحب الاكتشاف'), ('floral', 'الورد والزهور'), ('fresh', 'الحمضيات والانتعاش'), ('woody', 'العود والمسك'), ('gourmand', 'الفانيلا والدفء')], validators=[DataRequired()])
+    family = SelectField("أي نوتات تفضّل؟", choices=[('any', 'أحب الاكتشاف'), ('floral', 'الورد والزهور'), ('fresh', 'الحمضيات والانتعاش'), ('woody', 'الأخشاب والمسك'), ('oriental', 'العود والعنبر'), ('gourmand', 'الفانيلا والدفء')], validators=[DataRequired()])
     occasion = SelectField("متى ترتدي عطرك؟", choices=[('everyday', 'كل يوم'), ('evening', 'المناسبات والمساء'), ('gift', 'أبحث عن هدية')], validators=[DataRequired()])
     intensity = SelectField("ما الحضور الذي يناسبك؟", choices=[('soft', 'ناعم وقريب'), ('balanced', 'متوازن'), ('bold', 'غني ولافت')], validators=[DataRequired()])
     submit = SubmitField("اكتشف اختياراتي")

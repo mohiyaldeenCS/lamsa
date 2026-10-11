@@ -1,22 +1,23 @@
 from functools import wraps
 from datetime import datetime
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import os
 import secrets
-import sqlite3
 from urllib.parse import urlsplit
 
 from flask import (Flask, abort, flash, redirect, render_template, request,
                    session, url_for)
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy import inspect, or_, update
+from sqlalchemy import or_, update
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config, local_secret_key
+from catalog import AUDIENCES, CATEGORIES, FILTER_KEYS, IMAGES, VOLUMES, register_catalog_commands
 from forms import (CheckoutForm, EmptyForm, FragranceFinderForm, LoginForm,
                    ORDER_STATUS_LABELS, OrderStatusForm, PerfumeForm, RegisterForm)
 from models import Order, OrderItem, Perfume, User, db
+from migrations import ensure_schema
 
 
 def create_app(test_config=None):
@@ -30,17 +31,10 @@ def create_app(test_config=None):
     CSRFProtect(app)
     os.makedirs(os.path.join(app.root_path, "instance"), exist_ok=True)
 
-    # Existing inventory and accounts are never recreated or reseeded here.
+    # Startup migrates metadata but never seeds inventory or creates accounts.
     with app.app_context():
-        existing_tables = set(inspect(db.engine).get_table_names())
-        if not {'order', 'order_item'}.issubset(existing_tables):
-            database_path = db.engine.url.database
-            if db.engine.url.drivername == 'sqlite' and database_path and os.path.isfile(database_path) and not app.testing:
-                backup_path = database_path + '.before-orders-' + datetime.now().strftime('%Y%m%d-%H%M%S-%f') + '.bak'
-                with sqlite3.connect(database_path) as source, sqlite3.connect(backup_path) as backup:
-                    source.backup(backup)
-                app.logger.info('Database backed up to %s', backup_path)
-            db.create_all()
+        ensure_schema(app)
+    register_catalog_commands(app)
 
     def current_user():
         user_id = session.get("user_id")
@@ -124,7 +118,7 @@ def create_app(test_config=None):
 
     @app.route("/")
     def home():
-        featured = Perfume.query.order_by(Perfume.created_at.desc()).limit(5).all()
+        featured = Perfume.query.order_by(Perfume.featured.desc(), Perfume.id.asc()).limit(5).all()
         return render_template("home.html", perfumes=featured)
 
     @app.route("/about")
@@ -211,25 +205,59 @@ def create_app(test_config=None):
         price = request.args.get("price", "")
         availability = request.args.get("availability", "")
         sort = request.args.get("sort", "newest")
+        category = request.args.get('category', '')
+        audience = request.args.get('audience', '')
+        volume = request.args.get('volume', '')
         if search:
             pattern = f"%{search}%"
-            query = query.filter(or_(Perfume.name.ilike(pattern), Perfume.brand.ilike(pattern), Perfume.description.ilike(pattern)))
+            query = query.filter(or_(Perfume.name.ilike(pattern), Perfume.brand.ilike(pattern), Perfume.description.ilike(pattern), Perfume.sku.ilike(pattern)))
         if brand:
             query = query.filter(Perfume.brand == brand)
+        if category:
+            query = query.filter(Perfume.category == category)
+        if audience:
+            query = query.filter(Perfume.audience == audience)
+        if volume:
+            try:
+                query = query.filter(Perfume.volume_ml == int(volume))
+            except ValueError:
+                abort(400)
         if price == "under175": query = query.filter(Perfume.price < 175)
         elif price == "175-225": query = query.filter(Perfume.price >= 175, Perfume.price <= 225)
         elif price == "over225": query = query.filter(Perfume.price > 225)
+        price_bounds = {}
+        for key in ('min_price', 'max_price'):
+            raw = request.args.get(key, '').strip()
+            if raw:
+                try:
+                    value = Decimal(raw)
+                    if not value.is_finite() or not 0 <= value <= 1000000:
+                        abort(400)
+                except InvalidOperation:
+                    abort(400)
+                price_bounds[key] = value
+        if len(price_bounds) == 2 and price_bounds['min_price'] > price_bounds['max_price']:
+            abort(400)
+        if 'min_price' in price_bounds:
+            query = query.filter(Perfume.price >= price_bounds['min_price'])
+        if 'max_price' in price_bounds:
+            query = query.filter(Perfume.price <= price_bounds['max_price'])
         if availability == "available": query = query.filter(Perfume.stock > 0)
         order_map = {"price_asc": Perfume.price.asc(), "price_desc": Perfume.price.desc(), "name": Perfume.name.asc(), "newest": Perfume.created_at.desc()}
-        products = query.order_by(order_map.get(sort, Perfume.created_at.desc())).all()
+        page = max(1, min(request.args.get('page', 1, type=int) or 1, 1000000))
+        pagination = query.order_by(order_map.get(sort, Perfume.created_at.desc()), Perfume.id.asc()).paginate(page=page, per_page=12, error_out=False)
+        filters = {key: request.args.get(key) for key in FILTER_KEYS if request.args.get(key)}
+        def page_url(number):
+            return url_for('perfumes', **filters, page=number)
         brands = [row[0] for row in db.session.query(Perfume.brand).filter(Perfume.brand.isnot(None)).distinct().order_by(Perfume.brand)]
-        return render_template("perfumes.html", perfumes=products, brands=brands)
+        return render_template("perfumes.html", perfumes=pagination.items, brands=brands,
+                               pagination=pagination, page_url=page_url, filters=filters)
 
     @app.route("/perfumes/<int:pid>")
     def perfume_detail(pid):
         perfume = db.session.get(Perfume, pid)
         if not perfume: abort(404)
-        similar = Perfume.query.filter(Perfume.id != pid).order_by(Perfume.created_at.desc()).limit(3).all()
+        similar = Perfume.query.filter(Perfume.id != pid).order_by((Perfume.category == perfume.category).desc(), Perfume.id.asc()).limit(3).all()
         notes = [part.strip() for part in (perfume.description or "عنبر، مسك، أخشاب دافئة").replace("،", ",").split(",") if part.strip()][:4]
         return render_template("perfume_detail.html", perfume=perfume, similar=similar, notes=notes, wished=pid in session.get("wishlist", []))
 
@@ -316,11 +344,14 @@ def create_app(test_config=None):
                 'fresh': ('بحر', 'برغموت', 'ليمون', 'حمض', 'نعناع', 'citrus', 'fresh'),
                 'woody': ('عود', 'أخشاب', 'مسك', 'عنبر', 'صندل', 'wood', 'musk'),
                 'gourmand': ('فانيلا', 'تونكا', 'كراميل', 'vanilla', 'amber'),
+                'oriental': ('عود', 'عنبر', 'زعفران', 'بخور', 'oud', 'amber'),
                 'any': (),
             }
             def relevance(perfume):
                 text = f'{perfume.name} {perfume.description or ""}'.lower()
                 score = sum(5 for word in keywords[form.family.data] if word in text)
+                if perfume.category == form.family.data:
+                    score += 30
                 bright = any(word in text for word in keywords['fresh'] + keywords['floral'])
                 rich = any(word in text for word in ('عود', 'عنبر', 'داكن', 'فانيلا', 'tonka', 'amber'))
                 if form.occasion.data == 'everyday' and bright: score += 2
@@ -371,7 +402,8 @@ def create_app(test_config=None):
                         return redirect(url_for('cart'))
                     order.items.append(OrderItem(perfume_id=perfume.id, name=perfume.name,
                         brand=perfume.brand or '', unit_price=money(perfume.price),
-                        quantity=quantity, line_total=item['line_total']))
+                        quantity=quantity, line_total=item['line_total'], image_key=perfume.image_key,
+                        volume_ml=perfume.volume_ml, category=perfume.category, audience=perfume.audience))
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
@@ -451,7 +483,9 @@ def create_app(test_config=None):
     def add_perfume():
         form = PerfumeForm()
         if form.validate_on_submit():
-            perfume = Perfume(name=form.name.data, brand=form.brand.data, description=form.description.data, price=float(money(form.price.data)), stock=form.stock.data)
+            perfume = Perfume()
+            form.populate_obj(perfume)
+            perfume.price = float(money(form.price.data))
             db.session.add(perfume); db.session.commit(); flash("تمت إضافة العطر إلى المجموعة.", "success")
             return redirect(url_for("admin"))
         return render_template("perfume_form.html", form=form, title="إضافة عطر جديد", editing=False)
@@ -482,7 +516,9 @@ def create_app(test_config=None):
     @app.context_processor
     def inject_globals():
         cart_data = clean_cart()
-        return {"logged_in": bool(session.get("user_id")), "current_username": session.get("username"), "cart_count": sum(cart_data.values()), "wishlist_count": len(session.get("wishlist", [])), "wishlist_ids": session.get('wishlist', []), "empty_form": EmptyForm(), "current_year": datetime.now().year, 'status_labels': ORDER_STATUS_LABELS}
+        return {"logged_in": bool(session.get("user_id")), "current_username": session.get("username"), "cart_count": sum(cart_data.values()), "wishlist_count": len(session.get("wishlist", [])), "wishlist_ids": session.get('wishlist', []), "empty_form": EmptyForm(), "current_year": datetime.now().year, 'status_labels': ORDER_STATUS_LABELS,
+                'category_labels': CATEGORIES, 'audience_labels': AUDIENCES, 'catalog_volumes': VOLUMES,
+                'catalog_images': IMAGES, 'catalog_filter_keys': FILTER_KEYS}
 
     @app.errorhandler(404)
     def not_found(_error):
