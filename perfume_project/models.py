@@ -24,3 +24,36 @@ class Perfume(db.Model):
 
     def __repr__(self):
         return f'<Perfume {self.name}>'
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    checkout_token = db.Column(db.String(96), nullable=False, unique=True)
+    full_name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(30), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(500), nullable=False)
+    note = db.Column(db.String(1000), nullable=False, default='')
+    subtotal = db.Column(db.Numeric(12, 2), nullable=False)
+    shipping = db.Column(db.Numeric(12, 2), nullable=False, default=0)
+    total = db.Column(db.Numeric(12, 2), nullable=False)
+    status = db.Column(db.String(24), nullable=False, default='pending', index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    items = db.relationship('OrderItem', backref='order', lazy='selectin', cascade='all, delete-orphan')
+
+    @property
+    def number(self):
+        return f'LM-{self.id:05d}'
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False, index=True)
+    # Deliberately retain snapshots even when an administrator deletes a product.
+    perfume_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    brand = db.Column(db.String(120), nullable=False, default='')
+    unit_price = db.Column(db.Numeric(12, 2), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    line_total = db.Column(db.Numeric(12, 2), nullable=False)

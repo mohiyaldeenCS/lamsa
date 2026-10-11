@@ -1,31 +1,6 @@
-{% extends "base.html" %}
-{% block title %}لَمْسَة | عطور تترك أثرًا{% endblock %}
-{% block content %}
-<section class="hero">
-  <div class="shell hero-grid">
-    <div class="hero-copy reveal">
-      <p class="eyebrow">مجموعة خريف 2026</p>
-      <h1>عطرُك،<br><em>توقيعك الخفي.</em></h1>
-      <p class="lead">تكوينات عطرية منتقاة تمزج دفء المشرق بهدوء الحداثة. روائح لا تكتفي بالحضور، بل تترك أثرًا.</p>
-      <div class="hero-cta"><a class="button primary" href="{{ url_for('perfumes') }}">اكتشف المجموعة <span>←</span></a><a class="text-link" href="{{ url_for('about') }}">اعرف حكايتنا</a></div>
-      <div class="hero-proof"><span><b>+30</b> تركيبة مختارة</span><span><b>4.9</b> رضا عملائنا</span></div>
-    </div>
-    <div class="hero-visual reveal delay-1" aria-label="تكوين فني لزجاجة عطر لَمْسَة">
-      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-      <div class="hero-bottle"><div class="hero-cap"></div><div class="hero-glass"><span>لَمْسَة<small>أثر</small></span></div></div>
-      <span class="botanical leaf-one"></span><span class="botanical leaf-two"></span>
-      <p class="vertical-note">EAU DE PARFUM · 75 ML</p>
-    </div>
-  </div>
-</section>
-<section class="service-strip"><div class="shell"><div><b>✦</b><span><strong>أصالة مضمونة</strong><small>منتجات مختارة بعناية</small></span></div><div><b>⌁</b><span><strong>توصيل سريع</strong><small>إلى جميع مدن المملكة</small></span></div><div><b>◇</b><span><strong>تغليف يليق بهديتك</strong><small>تفاصيل فاخرة بلا تكلفة</small></span></div></div></section>
-<section class="section shell">
-  <div class="section-heading"><div><p class="eyebrow">اختياراتنا لك</p><h2>الأكثر حضورًا</h2></div><a class="text-link" href="{{ url_for('perfumes') }}">عرض كل العطور ←</a></div>
-  <div class="product-grid">{% for p in perfumes %}{% include "_product_card.html" %}{% else %}<div class="empty-state"><span>◇</span><h3>المجموعة قيد التحضير</h3><p>نضيف عطورنا المختارة قريبًا.</p></div>{% endfor %}</div>
-</section>
-<section class="occasions section">
-  <div class="shell"><div class="section-heading light"><div><p class="eyebrow">لكل لحظة أثر</p><h2>اختر عطرك بالمزاج</h2></div></div>
-  <div class="occasion-grid"><a href="{{ url_for('perfumes', q='ورد') }}"><span>01</span><h3>لحظات ناعمة</h3><p>ورد ومسك أبيض</p></a><a href="{{ url_for('perfumes', q='عود') }}"><span>02</span><h3>حضور مسائي</h3><p>عود وعنبر دافئ</p></a><a href="{{ url_for('perfumes', q='برغموت') }}"><span>03</span><h3>صباح متجدد</h3><p>حمضيات وأخشاب</p></a></div></div>
-</section>
-<section class="story-section shell section"><div class="story-mark">ل</div><div><p class="eyebrow">قصتنا</p><h2>من الذاكرة العربية،<br>إلى تفاصيل يومك.</h2></div><div><p>بدأت لَمْسَة بفكرة بسيطة: أن العطر ليس إضافة أخيرة، بل لغة شخصية. نبحث عن تركيبات متوازنة، ومكونات ذات حضور صادق، ثم نقدمها بتجربة هادئة تليق بك.</p><a class="text-link" href="{{ url_for('about') }}">اقرأ حكايتنا كاملة ←</a></div></section>
-{% endblock %}
+{% extends 'base.html' %}{% from '_ui.html' import icon %}
+{% block content %}<section class="shell hero"><div class="hero-copy"><span class="eyebrow">{{ icon('spark') }} مجموعة لمسة العطرية</span><h1>رائحة تشبهك.<br>وأثر <span>لا يُنسى.</span></h1><p>ليست مجرد رائحة. إنها تفاصيلك، لحظاتك،<br class="desktop-only"> والطريقة التي يتذكرك بها العالم.</p><div class="hero-actions"><a class="button primary" href="{{ url_for('perfumes') }}">اكتشف المجموعة {{ icon('arrow') }}</a><a class="text-link" href="{{ url_for('fragrance_finder') }}">ساعدني أختار {{ icon('spark') }}</a></div><div class="hero-foot"><span class="hero-line"></span><span>روائح تُحسّ، قبل أن تُوصف.</span><span dir="ltr">EST. 2026</span></div></div><div class="hero-visual"><img class="hero-photo" src="{{ url_for('static',filename='images/hero-campaign.png') }}" alt="تكوين عطري فني لزجاجة لمسة في إضاءة طبيعية بين النباتات" fetchpriority="high" width="900" height="900"><div class="hero-image-label"><span dir="ltr">THE ART OF SCENT</span><span>جمال يبدأ بإحساس.</span></div><div class="hero-stamp">لَـمْـسَـة <span>YOUR SCENT,<br>YOUR STORY.</span></div></div></section>
+<div class="shell benefits"><div>{{ icon('spark') }}<span>اختيار أقرب لشخصيتك<small>دليل عطري في ثلاث خطوات</small></span></div><div>{{ icon('heart') }}<span>روائح تستحق أن تحفظها<small>مجموعتك الخاصة في المفضلة</small></span></div><div>{{ icon('package') }}<span>تجربة مرتّبة حتى النهاية<small>حقيبتك وطلباتك في مكان واحد</small></span></div></div>
+<section class="shell section shop-section"><div class="section-heading"><div><span class="eyebrow">THE SCENT EDIT</span><h2>اكتشف توقيعك العطري</h2></div><a class="text-link" href="{{ url_for('perfumes') }}">تسوّق كل العطور {{ icon('arrow') }}</a></div><div class="collection-tabs" aria-label="استكشف المجموعة"><a class="selected" href="{{ url_for('perfumes') }}">كل الاكتشافات</a><a href="{{ url_for('perfumes',q='ورد') }}">زهري وناعم</a><a href="{{ url_for('perfumes',q='مسك') }}">مسك وأخشاب</a><a href="{{ url_for('perfumes',q='حمضيات') }}">منعش ومشرق</a><a href="{{ url_for('perfumes',q='فانيلا') }}">دافئ وحلو</a></div><div class="product-grid home-products">{% for perfume in perfumes %}{% include '_product_card.html' %}{% else %}<div class="empty-state"><h3>المجموعة قيد التحضير</h3><p>ستظهر العطور هنا عند إضافتها.</p></div>{% endfor %}</div></section>
+<section class="shell mood-grid"><a class="mood-card" href="{{ url_for('perfumes',q='ورد') }}"><img src="{{ url_for('static',filename='images/perfume-rose.png') }}" alt="عطر زهري بين بتلات الورد" loading="lazy"><div><span class="eyebrow">SOFT & TIMELESS</span><h2>للّحظات الناعمة.</h2><span class="text-link">اكتشف نفحات الورد {{ icon('arrow') }}</span></div></a><a class="mood-card fresh" href="{{ url_for('perfumes',q='حمضيات') }}"><img src="{{ url_for('static',filename='images/perfume-citrus.png') }}" alt="عطر منعش مع لمسات حمضية" loading="lazy"><div><span class="eyebrow">FRESH & FREE</span><h2>لبداية تشبه الضوء.</h2><span class="text-link">استكشف الروائح المنعشة {{ icon('arrow') }}</span></div></a></section>
+<section class="shell finder-promo"><div class="finder-symbol">{{ icon('spark') }}</div><div><span class="eyebrow">LET YOUR SENSES LEAD</span><h2>عطرك القادم؟ دع ذوقك يختاره.</h2><p>ثلاثة أسئلة بسيطة، واكتشافات عطرية تناسب ما تحب.</p></div><a class="button primary" href="{{ url_for('fragrance_finder') }}">ابدأ رحلة الاكتشاف {{ icon('arrow') }}</a><span class="finder-decoration" aria-hidden="true">Scent<br>stories.</span></section>{% endblock %}
