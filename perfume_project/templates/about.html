@@ -1,3 +1,8 @@
-{% extends "base.html" %}{% block content %}
-<h2>About Us</h2><p>Author: {{ info.author }}</p><p>Purpose: {{ info.purpose }}</p>
-<p>Perfume Store is a demo Flask project showcasing products, user accounts, and admin management.</p>{% endblock %}
+{% extends "base.html" %}
+{% block title %}حكايتنا | لَمْسَة{% endblock %}
+{% block content %}
+<section class="about-hero"><div class="shell"><p class="eyebrow">حكاية لَمْسَة</p><h1>نؤمن أن الرائحة<br><em>شكلٌ آخر للذاكرة.</em></h1><p>لذلك نختار كل عطر كما تُختار الكلمات في رسالة مهمة: بتمهّل، وصدق، وعناية.</p></div></section>
+<section class="shell about-story section"><div class="about-art"><div class="bottle large"><i></i><b>ل</b><small>LAMSA</small></div></div><div><span class="chapter">01 — البدايات</span><h2>من شغف شخصي<br>إلى تجربة عطرية.</h2><p>وُلدت لَمْسَة في المملكة العربية السعودية من انجذاب دائم للرائحة وقدرتها على استدعاء الأماكن والوجوه واللحظات. أردنا متجرًا لا يكدّس الخيارات، بل ينتقيها.</p><p>كل تركيبة في مجموعتنا تجمع بين دفء المكونات العربية ونقاء الأسلوب المعاصر؛ لتجد عطرًا يعبّر عنك، لا يسبقك.</p></div></section>
+<section class="values-section"><div class="shell"><p class="eyebrow">ما نؤمن به</p><div class="values-grid"><article><span>01</span><h2>الاختيار قبل الكثرة</h2><p>مجموعة مدروسة تمنح كل عطر المساحة التي يستحقها.</p></article><article><span>02</span><h2>التفاصيل تصنع التجربة</h2><p>من وصف النوتة حتى لحظة فتح الصندوق، نهتم بكل لمسة.</p></article><article><span>03</span><h2>الجمال بلا تكلّف</h2><p>فخامة هادئة وصادقة، قريبة من روحك ويومك.</p></article></div></div></section>
+<section class="shell service-promise section"><div><p class="eyebrow">وعدنا لك</p><h2>تجربة تليق بالعطر.</h2></div><ul><li><b>01</b><span><strong>أصالة وجودة</strong>نراجع كل اختيار قبل أن يصل إليك.</span></li><li><b>02</b><span><strong>تغليف متقن</strong>كل طلب يصل كأنه هدية.</span></li><li><b>03</b><span><strong>خدمة قريبة</strong>نحن هنا لمساعدتك في اختيارك.</span></li></ul></section>
+{% endblock %}

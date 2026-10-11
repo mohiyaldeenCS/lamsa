@@ -1,21 +1,28 @@
 from app import create_app
 from models import db, User, Perfume
+from werkzeug.security import generate_password_hash
+
 app = create_app()
 app.app_context().push()
 
 def seed():
     db.create_all()
+    # Create admin and sample user
     if not User.query.filter_by(username='admin').first():
-        db.session.add(User(username='admin', password='admin', is_admin=True))
+        admin = User(username='admin', password=generate_password_hash('admin'), is_admin=True)
+        db.session.add(admin)
     if not User.query.filter_by(username='user1').first():
-        db.session.add(User(username='user1', password='user1', is_admin=False))
+        u = User(username='user1', password=generate_password_hash('user1'), is_admin=False)
+        db.session.add(u)
+    
+    # Seed perfumes
     if Perfume.query.count() == 0:
         perfumes = [
-            {'name':'Rose Essence','brand':'Bloom','description':'Floral and fresh','price':50.0,'stock':15},
-            {'name':'Ocean Breeze','brand':'Wave','description':'Fresh aquatic scent','price':45.0,'stock':20},
-            {'name':'Night Musk','brand':'Dark Night','description':'Deep musk fragrance','price':70.0,'stock':10},
-            {'name':'Vanilla Sky','brand':'SweetNotes','description':'Warm vanilla aroma','price':55.0,'stock':12},
-            {'name':'Citrus Spark','brand':'FreshLife','description':'Energetic citrus','price':40.0,'stock':18}
+            {'name':'جوهر الورد','brand':'لَمْسَة','description':'ورد طائفي، زعفران، مسك أبيض','price':189.0, 'stock':15},
+            {'name':'نسيم البحر','brand':'أمواج','description':'برغموت، ملح البحر، أخشاب طافية','price':165.0, 'stock':20},
+            {'name':'مسك الليل','brand':'سُرى','description':'مسك داكن، عنبر، عود معتّق','price':245.0, 'stock':10},
+            {'name':'سماء الفانيلا','brand':'نغم','description':'فانيلا مدغشقر، تونكا، صندل','price':210.0, 'stock':12},
+            {'name':'وهج الحمضيات','brand':'رَونق','description':'برغموت، ليمون، زهر البرتقال','price':149.0, 'stock':18}
         ]
         for p in perfumes:
             db.session.add(Perfume(**p))

@@ -1,4 +1,5 @@
-{% extends "base.html" %}{% block content %}
-<h2>Login</h2><form method="post">{{ form.hidden_tag() }}
-<p>{{ form.username.label }} {{ form.username(size=32) }}</p>
-<p>{{ form.password.label }} {{ form.password(size=32) }}</p><p>{{ form.submit() }}</p></form>{% endblock %}
+{% extends "base.html" %}
+{% block title %}تسجيل الدخول | لَمْسَة{% endblock %}
+{% block content %}
+<section class="auth-page"><div class="shell auth-grid"><div class="auth-panel"><p class="eyebrow">عودتك تسعدنا</p><h1>مرحبًا بك من جديد.</h1><p>ادخل إلى عالمك العطري، واحتفظ باختياراتك وتابع حقيبتك بسهولة.</p><blockquote>“العطر ذاكرة لا تحتاج إلى صورة.”</blockquote></div><div class="auth-card"><h2>تسجيل الدخول</h2><p>أدخل بيانات حسابك للمتابعة.</p><form method="post" novalidate>{{ form.hidden_tag() }}{% for field in [form.username, form.password] %}<div class="field">{{ field.label }}{{ field(class='input', autocomplete='username' if field.name == 'username' else 'current-password') }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}{{ form.submit(class='button primary full') }}</form><div class="auth-switch">ليس لديك حساب؟ <a href="{{ url_for('register') }}">أنشئ حسابًا</a></div></div></div></section>
+{% endblock %}

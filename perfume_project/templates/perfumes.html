@@ -1,3 +1,18 @@
-{% extends "base.html" %}{% block content %}
-<h2>Perfume Catalog</h2><table><thead><tr><th>ID</th><th>Name</th><th>Brand</th><th>Price</th><th>Stock</th></tr></thead><tbody>
-{% for p in perfumes %}<tr><td>{{ p.id }}</td><td><a href="{{ url_for('perfume_detail',pid=p.id) }}">{{ p.name }}</a></td><td>{{ p.brand }}</td><td>${{ p.price }}</td><td>{{ p.stock }}</td></tr>{% endfor %}</tbody></table>{% endblock %}
+{% extends "base.html" %}
+{% block title %}مجموعة العطور | لَمْسَة{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="shell"><p class="eyebrow">مجموعة لَمْسَة</p><h1>العطور</h1><p>ابحث عن الأثر الذي يشبهك بين روائح منتقاة للنهار والمساء.</p></div></section>
+<section class="shell catalog-layout">
+  <form class="filters" method="get" action="{{ url_for('perfumes') }}">
+    <div class="filter-title"><h2>صفِّ المجموعة</h2><a href="{{ url_for('perfumes') }}">مسح الكل</a></div>
+    <label>ابحث عن عطر<div class="search-box"><input type="search" name="q" value="{{ request.args.get('q','') }}" placeholder="اسم، دار، أو نوتة..."><button type="submit" aria-label="بحث">⌕</button></div></label>
+    <label>الدار العطرية<select name="brand"><option value="">جميع الدور</option>{% for brand in brands %}<option value="{{ brand }}" {% if request.args.get('brand') == brand %}selected{% endif %}>{{ brand }}</option>{% endfor %}</select></label>
+    <label>نطاق السعر<select name="price"><option value="">كل الأسعار</option><option value="under175" {% if request.args.get('price') == 'under175' %}selected{% endif %}>أقل من 175 ر.س</option><option value="175-225" {% if request.args.get('price') == '175-225' %}selected{% endif %}>175 — 225 ر.س</option><option value="over225" {% if request.args.get('price') == 'over225' %}selected{% endif %}>أكثر من 225 ر.س</option></select></label>
+    <label class="check-row"><input type="checkbox" name="availability" value="available" {% if request.args.get('availability') == 'available' %}checked{% endif %}><span>المتوفر فقط</span></label>
+    <input type="hidden" name="sort" value="{{ request.args.get('sort','newest') }}"><button class="button primary full" type="submit">تطبيق الفلاتر</button>
+  </form>
+  <div class="catalog-results"><div class="results-toolbar"><p><strong>{{ perfumes|length }}</strong> عطرًا</p><form method="get">{% for key in ['q','brand','price','availability'] %}{% if request.args.get(key) %}<input type="hidden" name="{{ key }}" value="{{ request.args.get(key) }}">{% endif %}{% endfor %}<label>ترتيب <select name="sort" onchange="this.form.submit()"><option value="newest" {% if request.args.get('sort','newest') == 'newest' %}selected{% endif %}>الأحدث</option><option value="price_asc" {% if request.args.get('sort') == 'price_asc' %}selected{% endif %}>السعر: الأقل</option><option value="price_desc" {% if request.args.get('sort') == 'price_desc' %}selected{% endif %}>السعر: الأعلى</option><option value="name" {% if request.args.get('sort') == 'name' %}selected{% endif %}>الاسم</option></select></label></form></div>
+    {% if perfumes %}<div class="product-grid catalog-grid">{% for p in perfumes %}{% include "_product_card.html" %}{% endfor %}</div>{% else %}<div class="empty-state"><span>⌕</span><h3>لم نجد عطرًا بهذه المواصفات</h3><p>جرّب إزالة بعض الفلاتر أو البحث بكلمة أخرى.</p><a class="button primary" href="{{ url_for('perfumes') }}">عرض المجموعة كاملة</a></div>{% endif %}
+  </div>
+</section>
+{% endblock %}
