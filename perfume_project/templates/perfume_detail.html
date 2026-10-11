@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<h2>{{ perfume.name }}</h2><p><strong>Brand:</strong> {{ perfume.brand }}</p>
+<p><strong>Description:</strong> {{ perfume.description }}</p>
+<p><strong>Price:</strong> ${{ perfume.price }}</p><p><strong>Stock:</strong> {{ perfume.stock }}</p>
+<a href="{{ url_for('perfumes') }}">Back to catalog</a>{% endblock %}

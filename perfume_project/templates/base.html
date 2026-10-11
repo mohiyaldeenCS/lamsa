@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Perfume Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body><header><h1>Perfume Store</h1><nav>
+<a href="{{ url_for('home') }}">Home</a> |
+<a href="{{ url_for('about') }}">About</a> |
+<a href="{{ url_for('perfumes') }}">Perfumes</a> |
+<a href="{{ url_for('cart') }}">Cart</a> |
+{% if logged_in %}
+<a href="{{ url_for('profile') }}">Profile ({{ current_username }})</a> |
+{% if session.get('is_admin') %}<a href="{{ url_for('add_perfume') }}">Add Perfume</a> |{% endif %}
+<a href="{{ url_for('logout') }}">Logout</a>
+{% else %}<a href="{{ url_for('login') }}">Login</a> |
+<a href="{{ url_for('register') }}">Register</a>{% endif %}
+</nav><hr>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}<ul class="flashes">{% for category,msg in messages %}
+<li class="{{ category }}">{{ msg }}</li>{% endfor %}</ul>{% endif %}
+{% endwith %}</header>
+<main>{% block content %}{% endblock %}</main>
+<footer><hr><small>&copy; 2025 Perfume Store</small></footer></body></html>

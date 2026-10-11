@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block content %}
+<h2>Shopping Cart</h2>{% if items %}<ul>{% for p in items %}<li>{{ p.name }} - ${{ p.price }}</li>{% endfor %}</ul>
+<p><strong>Total: ${{ total }}</strong></p>{% else %}<p>Your cart is empty.</p>{% endif %}{% endblock %}
