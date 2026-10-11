@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from uuid import uuid4
+
+from catalog import AUDIENCES, CATEGORIES, image_filename
 
 db = SQLAlchemy()
 
@@ -21,6 +24,24 @@ class Perfume(db.Model):
     price = db.Column(db.Float, nullable=False, default=0.0)
     stock = db.Column(db.Integer, default=10)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    sku = db.Column(db.String(40), nullable=False, unique=True, default=lambda: 'LM-' + uuid4().hex[:16].upper())
+    category = db.Column(db.String(24), nullable=False, default='woody', index=True)
+    audience = db.Column(db.String(16), nullable=False, default='unisex', index=True)
+    volume_ml = db.Column(db.Integer, nullable=False, default=100)
+    image_key = db.Column(db.String(24), nullable=False, default='musk')
+    featured = db.Column(db.Boolean, nullable=False, default=False)
+
+    @property
+    def category_label(self):
+        return CATEGORIES.get(self.category, CATEGORIES['woody'])
+
+    @property
+    def audience_label(self):
+        return AUDIENCES.get(self.audience, AUDIENCES['unisex'])
+
+    @property
+    def image_filename(self):
+        return image_filename(self.image_key)
 
     def __repr__(self):
         return f'<Perfume {self.name}>'
@@ -57,3 +78,19 @@ class OrderItem(db.Model):
     unit_price = db.Column(db.Numeric(12, 2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     line_total = db.Column(db.Numeric(12, 2), nullable=False)
+    image_key = db.Column(db.String(24), nullable=False, default='musk')
+    volume_ml = db.Column(db.Integer, nullable=False, default=100)
+    category = db.Column(db.String(24), nullable=False, default='woody')
+    audience = db.Column(db.String(16), nullable=False, default='unisex')
+
+    @property
+    def image_filename(self):
+        return image_filename(self.image_key)
+
+    @property
+    def category_label(self):
+        return CATEGORIES.get(self.category, CATEGORIES['woody'])
+
+    @property
+    def audience_label(self):
+        return AUDIENCES.get(self.audience, AUDIENCES['unisex'])
