@@ -1,21 +1,56 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Perfume Store</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
-<body><header><h1>Perfume Store</h1><nav>
-<a href="{{ url_for('home') }}">Home</a> |
-<a href="{{ url_for('about') }}">About</a> |
-<a href="{{ url_for('perfumes') }}">Perfumes</a> |
-<a href="{{ url_for('cart') }}">Cart</a> |
-{% if logged_in %}
-<a href="{{ url_for('profile') }}">Profile ({{ current_username }})</a> |
-{% if session.get('is_admin') %}<a href="{{ url_for('add_perfume') }}">Add Perfume</a> |{% endif %}
-<a href="{{ url_for('logout') }}">Logout</a>
-{% else %}<a href="{{ url_for('login') }}">Login</a> |
-<a href="{{ url_for('register') }}">Register</a>{% endif %}
-</nav><hr>
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}<ul class="flashes">{% for category,msg in messages %}
-<li class="{{ category }}">{{ msg }}</li>{% endfor %}</ul>{% endif %}
-{% endwith %}</header>
-<main>{% block content %}{% endblock %}</main>
-<footer><hr><small>&copy; 2025 Perfume Store</small></footer></body></html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="لَمْسَة — عطور عربية معاصرة مختارة بعناية">
+  <title>{% block title %}لَمْسَة | عطور تترك أثرًا{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
+  <div class="announcement">توصيل مجاني للطلبات فوق 250 ر.س <span>•</span> عينات مختارة مع كل طلب</div>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="{{ url_for('home') }}" aria-label="لَمْسَة، الرئيسية">
+        <span class="brand-ar">لَمْسَة</span><span class="brand-en">LAMSA</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b class="sr-only">فتح القائمة</b></button>
+      <nav id="main-nav" class="main-nav" aria-label="التنقل الرئيسي">
+        <a class="{{ 'active' if request.endpoint == 'home' }}" href="{{ url_for('home') }}">الرئيسية</a>
+        <a class="{{ 'active' if request.endpoint in ['perfumes', 'perfume_detail'] }}" href="{{ url_for('perfumes') }}">العطور</a>
+        <a class="{{ 'active' if request.endpoint == 'about' }}" href="{{ url_for('about') }}">من نحن</a>
+        {% if session.get('is_admin') %}<a href="{{ url_for('admin') }}">الإدارة</a>{% endif %}
+        {% if logged_in %}<a class="mobile-account-link" href="{{ url_for('profile') }}">حسابي — {{ current_username }}</a>{% else %}<a class="mobile-account-link" href="{{ url_for('login') }}">تسجيل الدخول</a>{% endif %}
+      </nav>
+      <div class="header-actions">
+        <a class="icon-link" href="{{ url_for('cart') }}" aria-label="حقيبة التسوق، {{ cart_count }} منتجات"><span aria-hidden="true">◫</span><em>{{ cart_count }}</em></a>
+        {% if logged_in %}
+          <a class="account-link" href="{{ url_for('profile') }}">{{ current_username }}</a>
+          <form method="post" action="{{ url_for('logout') }}">{{ empty_form.hidden_tag() }}<button class="link-button" type="submit">خروج</button></form>
+        {% else %}
+          <a class="account-link" href="{{ url_for('login') }}">دخول</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="toast-stack" aria-live="polite">{% for category, msg in messages %}<div class="toast {{ category }}"><span>{{ msg }}</span><button type="button" aria-label="إغلاق الرسالة">×</button></div>{% endfor %}</div>{% endif %}
+  {% endwith %}
+
+  <main id="main-content">{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <section><a class="brand footer-brand" href="{{ url_for('home') }}"><span class="brand-ar">لَمْسَة</span><span class="brand-en">LAMSA</span></a><p>نختار روائح تحكي قصصًا عربية بروح معاصرة، وتبقى في الذاكرة قبل أن تغادر المكان.</p></section>
+      <section><h2>اكتشف</h2><a href="{{ url_for('perfumes') }}">مجموعة العطور</a><a href="{{ url_for('about') }}">حكايتنا</a><a href="{{ url_for('profile') }}">حسابي</a></section>
+      <section><h2>خدمتنا</h2><span>تغليف هدايا فاخر</span><span>دفع آمن عند الاستلام</span><span>استبدال خلال 7 أيام</span></section>
+      <section><h2>نشرة لَمْسَة</h2><p>رسائل قليلة، ملهمة، ومعها اكتشافات عطرية خاصة.</p><div class="newsletter"><input type="email" aria-label="البريد الإلكتروني" placeholder="بريدك الإلكتروني"><button type="button">انضم</button></div></section>
+    </div>
+    <div class="shell footer-bottom"><span>© {{ current_year }} لَمْسَة. جميع الحقوق محفوظة.</span><span>صُنع بذوق في المملكة العربية السعودية</span></div>
+  </footer>
+</body>
+</html>

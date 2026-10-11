@@ -1,1 +1,11 @@
-
+{% extends "base.html" %}
+{% block title %}لوحة الإدارة | لَمْسَة{% endblock %}
+{% block content %}
+<section class="admin-page shell">
+  <div class="admin-heading"><div><p class="eyebrow">إدارة لَمْسَة</p><h1>نظرة عامة</h1><p>تابع المجموعة والمخزون من مكان واحد.</p></div><a class="button primary" href="{{ url_for('add_perfume') }}">＋ إضافة عطر</a></div>
+  <div class="admin-stats"><article><span>العطور</span><strong>{{ products|length }}</strong><small>منتج في المجموعة</small></article><article><span>المخزون</span><strong>{{ stock_total }}</strong><small>وحدة متاحة</small></article><article><span>العملاء</span><strong>{{ user_count }}</strong><small>حساب مسجل</small></article><article class="{{ 'alert-stat' if low_stock }}"><span>تنبيه مخزون</span><strong>{{ low_stock|length }}</strong><small>منتجات منخفضة</small></article></div>
+  {% if low_stock %}<div class="low-stock-alert"><b>تنبيه</b><span>المخزون منخفض لـ {% for p in low_stock %}{{ p.name }}{% if not loop.last %}، {% endif %}{% endfor %}.</span></div>{% endif %}
+  <p class="table-scroll-hint">مرّر الجدول أفقيًا لعرض المخزون وإجراءات التعديل والحذف ←</p>
+  <div class="admin-table-wrap"><div class="table-title"><h2>المجموعة</h2><span>{{ products|length }} عطرًا</span></div><table class="admin-table"><thead><tr><th>العطر</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>{% for p in products %}<tr><td><div class="table-product"><span class="table-art art-{{ (p.id % 5) + 1 }}"></span><div><strong>{{ p.name }}</strong><small>{{ p.brand }}</small></div></div></td><td>{{ p.price|sar }}</td><td>{{ p.stock }}</td><td><span class="status {{ 'good' if p.stock > 5 else 'low' if p.stock > 0 else 'out' }}">{{ 'متوفر' if p.stock > 5 else 'منخفض' if p.stock > 0 else 'نفد' }}</span></td><td><div class="row-actions"><a href="{{ url_for('edit_perfume', pid=p.id) }}">تعديل</a><form method="post" action="{{ url_for('delete_perfume', pid=p.id) }}" data-confirm="هل تريد حذف هذا العطر نهائيًا؟">{{ empty_form.hidden_tag() }}<button type="submit">حذف</button></form></div></td></tr>{% else %}<tr><td colspan="5">لا توجد عطور بعد.</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}

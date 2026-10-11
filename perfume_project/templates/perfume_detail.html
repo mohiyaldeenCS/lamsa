@@ -1,5 +1,18 @@
-{% extends "base.html" %}{% block content %}
-<h2>{{ perfume.name }}</h2><p><strong>Brand:</strong> {{ perfume.brand }}</p>
-<p><strong>Description:</strong> {{ perfume.description }}</p>
-<p><strong>Price:</strong> ${{ perfume.price }}</p><p><strong>Stock:</strong> {{ perfume.stock }}</p>
-<a href="{{ url_for('perfumes') }}">Back to catalog</a>{% endblock %}
+{% extends "base.html" %}
+{% block title %}{{ perfume.name }} | لَمْسَة{% endblock %}
+{% block content %}
+<section class="shell detail-page">
+  <a class="back-link" href="{{ url_for('perfumes') }}">→ العودة إلى العطور</a>
+  <div class="detail-grid">
+    <div class="detail-art art-{{ (perfume.id % 5) + 1 }}"><span class="detail-seal">مختار بعناية</span><div class="bottle large"><i></i><b>{{ (perfume.brand or 'ل')[:1] }}</b><small>{{ perfume.name }}</small></div></div>
+    <div class="detail-copy"><p class="eyebrow">{{ perfume.brand }}</p><h1>{{ perfume.name }}</h1><div class="detail-price">{{ perfume.price|sar }} <small>شامل الضريبة</small></div><p class="detail-desc">{{ perfume.description or 'تركيبة أنيقة ذات حضور متوازن، صُممت لترافقك وتترك أثرًا لا يُنسى.' }}</p>
+      <div class="notes"><h2>النوتات البارزة</h2><div>{% for note in notes %}<span>{{ note }}</span>{% endfor %}</div></div>
+      <p class="availability {{ 'in-stock' if perfume.stock > 0 else 'out-stock' }}"><i></i>{% if perfume.stock > 0 %}متوفر — جاهز للشحن{% else %}غير متوفر حاليًا{% endif %}</p>
+      <form class="buy-row" method="post" action="{{ url_for('add_to_cart', pid=perfume.id) }}">{{ empty_form.hidden_tag() }}<label>الكمية<input type="number" name="quantity" min="1" max="{{ perfume.stock }}" value="1" {% if perfume.stock <= 0 %}disabled{% endif %}></label><button class="button primary" type="submit" {% if perfume.stock <= 0 %}disabled{% endif %}>أضف إلى الحقيبة <span>←</span></button></form>
+      <form method="post" action="{{ url_for('toggle_wishlist', pid=perfume.id) }}">{{ empty_form.hidden_tag() }}<button class="wishlist-button {{ 'active' if wished }}" type="submit"><span>{{ '♥' if wished else '♡' }}</span> {{ 'محفوظ في المفضلة' if wished else 'أضف إلى المفضلة' }}</button></form>
+      <div class="detail-promises"><span>توصيل مجاني فوق 250 ر.س</span><span>تغليف هدايا مجاني</span><span>استبدال سهل</span></div>
+    </div>
+  </div>
+</section>
+{% if similar %}<section class="shell section"><div class="section-heading"><div><p class="eyebrow">قد يعجبك أيضًا</p><h2>روائح قريبة</h2></div></div><div class="product-grid">{% for p in similar %}{% include "_product_card.html" %}{% endfor %}</div></section>{% endif %}
+{% endblock %}

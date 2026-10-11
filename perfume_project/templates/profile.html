@@ -1,2 +1,5 @@
-{% extends "base.html" %}{% block content %}
-<h2>User Profile: {{ user.username }}</h2><p>Joined: {{ user.created_at.strftime('%Y-%m-%d') }}</p>{% endblock %}
+{% extends "base.html" %}
+{% block title %}حسابي | لَمْسَة{% endblock %}
+{% block content %}
+<section class="shell profile-page"><div class="profile-welcome"><div><p class="eyebrow">مساحتك الخاصة</p><h1>أهلًا، {{ user.username }}</h1><p>كل ما تحبه من لَمْسَة في مكان واحد.</p></div><span class="profile-monogram">{{ user.username[:1]|upper }}</span></div><div class="stats-grid"><article><span>{{ wishlist_count }}</span><p>عطر في المفضلة</p></article><article><span>{{ cart_count }}</span><p>قطعة في الحقيبة</p></article><article><span>{{ user.created_at.strftime('%Y') }}</span><p>عضو منذ</p></article></div><div class="shortcut-grid"><a href="{{ url_for('perfumes') }}"><span>◇</span><div><h2>اكتشف عطرًا جديدًا</h2><p>تصفح المجموعة الكاملة</p></div><b>←</b></a><a href="{{ url_for('cart') }}"><span>◫</span><div><h2>حقيبة التسوق</h2><p>راجع اختياراتك الحالية</p></div><b>←</b></a>{% if user.is_admin %}<a href="{{ url_for('admin') }}"><span>⌘</span><div><h2>إدارة المتجر</h2><p>المنتجات والمخزون</p></div><b>←</b></a>{% endif %}</div></section>
+{% endblock %}

@@ -1,3 +1,17 @@
-{% extends "base.html" %}{% block content %}
-<h2>Shopping Cart</h2>{% if items %}<ul>{% for p in items %}<li>{{ p.name }} - ${{ p.price }}</li>{% endfor %}</ul>
-<p><strong>Total: ${{ total }}</strong></p>{% else %}<p>Your cart is empty.</p>{% endif %}{% endblock %}
+{% extends "base.html" %}
+{% block title %}حقيبة التسوق | لَمْسَة{% endblock %}
+{% block content %}
+<section class="page-hero compact"><div class="shell"><p class="eyebrow">اختياراتك</p><h1>حقيبة التسوق</h1></div></section>
+<section class="shell cart-page">
+{% if items %}
+  <form class="cart-list" method="post" action="{{ url_for('update_cart') }}">{{ empty_form.hidden_tag() }}
+    <div class="cart-head"><span>العطر</span><span>الكمية</span><span>الإجمالي</span></div>
+    {% for item in items %}<article class="cart-item"><a class="cart-art art-{{ (item.perfume.id % 5) + 1 }}" href="{{ url_for('perfume_detail', pid=item.perfume.id) }}"><span class="mini-bottle"></span></a><div class="cart-info"><p>{{ item.perfume.brand }}</p><h2><a href="{{ url_for('perfume_detail', pid=item.perfume.id) }}">{{ item.perfume.name }}</a></h2><span>{{ item.perfume.price|sar }}</span></div><input aria-label="كمية {{ item.perfume.name }}" type="number" name="quantity_{{ item.perfume.id }}" min="0" max="{{ item.perfume.stock }}" value="{{ item.quantity }}"><strong>{{ item.line_total|sar }}</strong><button class="remove-button" type="submit" formaction="{{ url_for('remove_from_cart', pid=item.perfume.id) }}" aria-label="إزالة {{ item.perfume.name }}">×</button></article>{% endfor %}
+    <div class="cart-actions"><a class="text-link" href="{{ url_for('perfumes') }}">→ مواصلة التسوق</a><button class="button secondary" type="submit">تحديث الحقيبة</button></div>
+  </form>
+  <aside class="order-summary"><p class="eyebrow">ملخص الطلب</p><h2>تفاصيل الحقيبة</h2><dl><div><dt>المجموع الفرعي</dt><dd>{{ subtotal|sar }}</dd></div><div><dt>التوصيل</dt><dd>{{ 'مجاني' if shipping == 0 else shipping|sar }}</dd></div><div class="summary-total"><dt>الإجمالي</dt><dd>{{ total|sar }}</dd></div></dl>{% if subtotal < 250 %}<p class="shipping-note">أضف {{ (250-subtotal)|sar }} لتحصل على التوصيل المجاني.</p>{% else %}<p class="shipping-note success">✓ حصلت على التوصيل المجاني.</p>{% endif %}<button class="button primary full" type="button">متابعة إتمام الطلب</button><form method="post" action="{{ url_for('clear_cart') }}">{{ empty_form.hidden_tag() }}<button class="link-button danger-text" type="submit">إفراغ الحقيبة</button></form><small>الدفع آمن ومشفّر بالكامل</small></aside>
+{% else %}
+  <div class="empty-state large"><span>◇</span><h2>حقيبتك تنتظر لمستك</h2><p>اكتشف مجموعتنا واختر العطر الذي يروي حكايتك.</p><a class="button primary" href="{{ url_for('perfumes') }}">اكتشف العطور</a></div>
+{% endif %}
+</section>
+{% endblock %}

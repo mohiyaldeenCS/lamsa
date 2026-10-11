@@ -1,4 +1,31 @@
-{% extends "base.html" %}{% block content %}
-<h2>Welcome to Perfume Store</h2><p>Discover our latest perfumes:</p><ul>
-{% for p in perfumes %}<li><a href="{{ url_for('perfume_detail',pid=p.id) }}">{{ p.name }}</a> by {{ p.brand }} - ${{ p.price }}</li>
-{% else %}<li>No perfumes available yet.</li>{% endfor %}</ul>{% endblock %}
+{% extends "base.html" %}
+{% block title %}لَمْسَة | عطور تترك أثرًا{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="shell hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">مجموعة خريف 2026</p>
+      <h1>عطرُك،<br><em>توقيعك الخفي.</em></h1>
+      <p class="lead">تكوينات عطرية منتقاة تمزج دفء المشرق بهدوء الحداثة. روائح لا تكتفي بالحضور، بل تترك أثرًا.</p>
+      <div class="hero-cta"><a class="button primary" href="{{ url_for('perfumes') }}">اكتشف المجموعة <span>←</span></a><a class="text-link" href="{{ url_for('about') }}">اعرف حكايتنا</a></div>
+      <div class="hero-proof"><span><b>+30</b> تركيبة مختارة</span><span><b>4.9</b> رضا عملائنا</span></div>
+    </div>
+    <div class="hero-visual reveal delay-1" aria-label="تكوين فني لزجاجة عطر لَمْسَة">
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="hero-bottle"><div class="hero-cap"></div><div class="hero-glass"><span>لَمْسَة<small>أثر</small></span></div></div>
+      <span class="botanical leaf-one"></span><span class="botanical leaf-two"></span>
+      <p class="vertical-note">EAU DE PARFUM · 75 ML</p>
+    </div>
+  </div>
+</section>
+<section class="service-strip"><div class="shell"><div><b>✦</b><span><strong>أصالة مضمونة</strong><small>منتجات مختارة بعناية</small></span></div><div><b>⌁</b><span><strong>توصيل سريع</strong><small>إلى جميع مدن المملكة</small></span></div><div><b>◇</b><span><strong>تغليف يليق بهديتك</strong><small>تفاصيل فاخرة بلا تكلفة</small></span></div></div></section>
+<section class="section shell">
+  <div class="section-heading"><div><p class="eyebrow">اختياراتنا لك</p><h2>الأكثر حضورًا</h2></div><a class="text-link" href="{{ url_for('perfumes') }}">عرض كل العطور ←</a></div>
+  <div class="product-grid">{% for p in perfumes %}{% include "_product_card.html" %}{% else %}<div class="empty-state"><span>◇</span><h3>المجموعة قيد التحضير</h3><p>نضيف عطورنا المختارة قريبًا.</p></div>{% endfor %}</div>
+</section>
+<section class="occasions section">
+  <div class="shell"><div class="section-heading light"><div><p class="eyebrow">لكل لحظة أثر</p><h2>اختر عطرك بالمزاج</h2></div></div>
+  <div class="occasion-grid"><a href="{{ url_for('perfumes', q='ورد') }}"><span>01</span><h3>لحظات ناعمة</h3><p>ورد ومسك أبيض</p></a><a href="{{ url_for('perfumes', q='عود') }}"><span>02</span><h3>حضور مسائي</h3><p>عود وعنبر دافئ</p></a><a href="{{ url_for('perfumes', q='برغموت') }}"><span>03</span><h3>صباح متجدد</h3><p>حمضيات وأخشاب</p></a></div></div>
+</section>
+<section class="story-section shell section"><div class="story-mark">ل</div><div><p class="eyebrow">قصتنا</p><h2>من الذاكرة العربية،<br>إلى تفاصيل يومك.</h2></div><div><p>بدأت لَمْسَة بفكرة بسيطة: أن العطر ليس إضافة أخيرة، بل لغة شخصية. نبحث عن تركيبات متوازنة، ومكونات ذات حضور صادق، ثم نقدمها بتجربة هادئة تليق بك.</p><a class="text-link" href="{{ url_for('about') }}">اقرأ حكايتنا كاملة ←</a></div></section>
+{% endblock %}
