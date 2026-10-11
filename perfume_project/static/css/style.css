@@ -1,0 +1,19 @@
+body { font-family:Arial,sans-serif; margin:20px; background-color:#fdf6f0; color:#333; }
+header,footer { text-align:center; }
+header h1 { color:#b35e5e; }
+nav a { margin-right:10px; text-decoration:none; color:#b35e5e; }
+nav a:hover { text-decoration:underline; }
+.flashes { list-style:none; padding:0; }
+.flashes li { padding:6px; margin:2px 0; border-radius:4px; }
+.flashes li.success { background:#c7f0c7; }
+.flashes li.danger { background:#f7c7c7; }
+.flashes li.info { background:#d0e7f9; }
+.flashes li.warning { background:#fff4c2; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+table,th,td { border:1px solid #ccc; }
+th,td { padding:8px; text-align:left; }
+form p { margin:10px 0; }
+form input,form textarea { padding:5px; width:300px; }
+button,input[type=submit] { padding:6px 12px; background-color:#b35e5e; color:white; border:none; border-radius:4px; cursor:pointer; }
+button:hover,input[type=submit]:hover { background-color:#903d3d; }
+ul li { margin:5px 0; }

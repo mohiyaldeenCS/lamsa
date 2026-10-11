@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block content %}
+<h2>Perfume Catalog</h2><table><thead><tr><th>ID</th><th>Name</th><th>Brand</th><th>Price</th><th>Stock</th></tr></thead><tbody>
+{% for p in perfumes %}<tr><td>{{ p.id }}</td><td><a href="{{ url_for('perfume_detail',pid=p.id) }}">{{ p.name }}</a></td><td>{{ p.brand }}</td><td>${{ p.price }}</td><td>{{ p.stock }}</td></tr>{% endfor %}</tbody></table>{% endblock %}

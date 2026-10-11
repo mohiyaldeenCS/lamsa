@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}
+<h2>Add New Perfume</h2><form method="post">{{ form.hidden_tag() }}
+<p>{{ form.name.label }} {{ form.name() }}</p><p>{{ form.brand.label }} {{ form.brand() }}</p>
+<p>{{ form.description.label }} {{ form.description(rows=4,cols=40) }}</p>
+<p>{{ form.price.label }} {{ form.price() }}</p><p>{{ form.stock.label }} {{ form.stock() }}</p>
+<p>{{ form.submit() }}</p></form>{% endblock %}

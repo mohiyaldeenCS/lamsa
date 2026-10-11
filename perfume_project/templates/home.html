@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block content %}
+<h2>Welcome to Perfume Store</h2><p>Discover our latest perfumes:</p><ul>
+{% for p in perfumes %}<li><a href="{{ url_for('perfume_detail',pid=p.id) }}">{{ p.name }}</a> by {{ p.brand }} - ${{ p.price }}</li>
+{% else %}<li>No perfumes available yet.</li>{% endfor %}</ul>{% endblock %}
