@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible application problem.
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe what happened without sharing private data.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Python version, browser, operating system
