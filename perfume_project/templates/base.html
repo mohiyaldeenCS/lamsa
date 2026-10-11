@@ -1,56 +1,6 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101820">
-  <meta name="description" content="لَمْسَة — عطور عربية معاصرة مختارة بعناية">
-  <title>{% block title %}لَمْسَة | عطور تترك أثرًا{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
-</head>
-<body>
-  <a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
-  <div class="announcement">توصيل مجاني للطلبات فوق 250 ر.س <span>•</span> عينات مختارة مع كل طلب</div>
-  <header class="site-header">
-    <div class="shell header-inner">
-      <a class="brand" href="{{ url_for('home') }}" aria-label="لَمْسَة، الرئيسية">
-        <span class="brand-ar">لَمْسَة</span><span class="brand-en">LAMSA</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b class="sr-only">فتح القائمة</b></button>
-      <nav id="main-nav" class="main-nav" aria-label="التنقل الرئيسي">
-        <a class="{{ 'active' if request.endpoint == 'home' }}" href="{{ url_for('home') }}">الرئيسية</a>
-        <a class="{{ 'active' if request.endpoint in ['perfumes', 'perfume_detail'] }}" href="{{ url_for('perfumes') }}">العطور</a>
-        <a class="{{ 'active' if request.endpoint == 'about' }}" href="{{ url_for('about') }}">من نحن</a>
-        {% if session.get('is_admin') %}<a href="{{ url_for('admin') }}">الإدارة</a>{% endif %}
-        {% if logged_in %}<a class="mobile-account-link" href="{{ url_for('profile') }}">حسابي — {{ current_username }}</a>{% else %}<a class="mobile-account-link" href="{{ url_for('login') }}">تسجيل الدخول</a>{% endif %}
-      </nav>
-      <div class="header-actions">
-        <a class="icon-link" href="{{ url_for('cart') }}" aria-label="حقيبة التسوق، {{ cart_count }} منتجات"><span aria-hidden="true">◫</span><em>{{ cart_count }}</em></a>
-        {% if logged_in %}
-          <a class="account-link" href="{{ url_for('profile') }}">{{ current_username }}</a>
-          <form method="post" action="{{ url_for('logout') }}">{{ empty_form.hidden_tag() }}<button class="link-button" type="submit">خروج</button></form>
-        {% else %}
-          <a class="account-link" href="{{ url_for('login') }}">دخول</a>
-        {% endif %}
-      </div>
-    </div>
-  </header>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}<div class="toast-stack" aria-live="polite">{% for category, msg in messages %}<div class="toast {{ category }}"><span>{{ msg }}</span><button type="button" aria-label="إغلاق الرسالة">×</button></div>{% endfor %}</div>{% endif %}
-  {% endwith %}
-
-  <main id="main-content">{% block content %}{% endblock %}</main>
-
-  <footer class="site-footer">
-    <div class="shell footer-grid">
-      <section><a class="brand footer-brand" href="{{ url_for('home') }}"><span class="brand-ar">لَمْسَة</span><span class="brand-en">LAMSA</span></a><p>نختار روائح تحكي قصصًا عربية بروح معاصرة، وتبقى في الذاكرة قبل أن تغادر المكان.</p></section>
-      <section><h2>اكتشف</h2><a href="{{ url_for('perfumes') }}">مجموعة العطور</a><a href="{{ url_for('about') }}">حكايتنا</a><a href="{{ url_for('profile') }}">حسابي</a></section>
-      <section><h2>خدمتنا</h2><span>تغليف هدايا فاخر</span><span>دفع آمن عند الاستلام</span><span>استبدال خلال 7 أيام</span></section>
-      <section><h2>نشرة لَمْسَة</h2><p>رسائل قليلة، ملهمة، ومعها اكتشافات عطرية خاصة.</p><div class="newsletter"><input type="email" aria-label="البريد الإلكتروني" placeholder="بريدك الإلكتروني"><button type="button">انضم</button></div></section>
-    </div>
-    <div class="shell footer-bottom"><span>© {{ current_year }} لَمْسَة. جميع الحقوق محفوظة.</span><span>صُنع بذوق في المملكة العربية السعودية</span></div>
-  </footer>
-</body>
-</html>
+{% from '_ui.html' import icon %}
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173d32"><meta name="description" content="لمسة — اكتشف عطرًا يشبهك، من النوتات الزهرية إلى الأخشاب الدافئة."><title>{% block title %}لَمْسَة | رائحة تشبهك{% endblock %}</title><link rel="preload" href="{{ url_for('static', filename='fonts/Tajawal-Regular.ttf') }}" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3"><script defer src="{{ url_for('static', filename='js/app.js') }}?v=3"></script></head><body><a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
+<div class="announcement"><span>لكل شخصية حكاية. ولكل حكاية عطر.</span><a href="{{ url_for('fragrance_finder') }}">اكتشف عطرك {{ icon('arrow') }}</a></div>
+<header class="site-header"><div class="shell header-inner"><a class="brand" href="{{ url_for('home') }}" aria-label="لمسة، الرئيسية"><span class="brand-en">LAMSA<span class="brand-dot">.</span></span><span class="brand-ar">لَـمْـسَـة</span></a><nav id="main-nav" class="main-nav" aria-label="التنقل الرئيسي"><a class="{{ 'active' if request.endpoint == 'home' }}" href="{{ url_for('home') }}">الرئيسية</a><a class="{{ 'active' if request.endpoint in ['perfumes','perfume_detail'] }}" href="{{ url_for('perfumes') }}">تسوّق العطور</a><a class="{{ 'active' if request.endpoint == 'fragrance_finder' }}" href="{{ url_for('fragrance_finder') }}">عطرك المناسب <span class="nav-label">اكتشف</span></a><a href="{{ url_for('about') }}">حكاية لمسة</a>{% if session.get('is_admin') %}<a href="{{ url_for('admin') }}">الإدارة</a>{% endif %}</nav><div class="header-actions"><a class="icon-button search-link" href="{{ url_for('perfumes') }}#catalog-search" aria-label="البحث عن عطر">{{ icon('search') }}</a><a class="icon-button" href="{{ url_for('profile') if logged_in else url_for('login') }}" aria-label="حسابي">{{ icon('user') }}</a><a class="icon-button" href="{{ url_for('wishlist') }}" aria-label="المفضلة، {{ wishlist_count }} عطور">{{ icon('heart') }}{% if wishlist_count %}<span class="count">{{ wishlist_count }}</span>{% endif %}</a><a class="icon-button bag-link" href="{{ url_for('cart') }}" aria-label="حقيبة التسوق، {{ cart_count }} منتجات">{{ icon('bag') }}<span class="count">{{ cart_count }}</span></a><button class="icon-button menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="فتح القائمة">{{ icon('menu') }}</button></div></div></header>
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="toast-stack" aria-live="polite">{% for category,msg in messages %}<div class="toast {{ category }}"><span>{{ msg }}</span><button type="button" aria-label="إغلاق الرسالة">{{ icon('close') }}</button></div>{% endfor %}</div>{% endif %}{% endwith %}<main id="main-content">{% block content %}{% endblock %}</main>
+<footer class="site-footer"><div class="shell footer-grid"><section class="footer-story"><a class="brand" href="{{ url_for('home') }}"><span class="brand-en">LAMSA.</span><span class="brand-ar">لَـمْـسَـة</span></a><h2>تفاصيل صغيرة.<br>أثر يبقى.</h2><p>مساحة لاكتشاف الروائح التي تعبّر عنك.<br>اختر نوتتك، واترك الباقي لإحساسك.</p></section><section><h3>عالم لمسة</h3><a href="{{ url_for('perfumes') }}">كل العطور</a><a href="{{ url_for('fragrance_finder') }}">دليل اختيار العطر</a><a href="{{ url_for('about') }}">حكايتنا</a></section><section><h3>مساحتك</h3><a href="{{ url_for('profile') }}">حسابي وطلباتي</a><a href="{{ url_for('wishlist') }}">عطوري المفضلة</a><a href="{{ url_for('cart') }}">حقيبة التسوق</a></section><section class="footer-note"><span class="eyebrow">A LITTLE SCENT. A LASTING IMPRESSION.</span><p>اختيارك يبدأ من هنا.</p><a class="button footer-button" href="{{ url_for('fragrance_finder') }}">اكتشف توقيعك العطري {{ icon('arrow') }}</a><small>متجر تجريبي؛ الطلبات محلية دون دفع أو شحن فعلي.</small></section></div><div class="shell footer-bottom"><span>© {{ current_year }} لمسة</span><span>صور توضيحية مولّدة للمجموعة العطرية</span><span dir="ltr">CURATED WITH FEELING</span></div></footer><dialog class="quick-dialog" id="quick-view" aria-labelledby="quick-view-title"><button class="dialog-close icon-button" type="button" aria-label="إغلاق المعاينة">{{ icon('close') }}</button><div class="quick-content"></div></dialog></body></html>
