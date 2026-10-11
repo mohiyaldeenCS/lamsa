@@ -1,0 +1,32 @@
+# Local environments and interpreter caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets, databases, private orders, and backups
+.env
+.env.*
+!.env.example
+**/instance/
+**/.secret_key
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.zip
+
+# Generated local output and editor files
+**/output/
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Unrelated local note
+/لايوجد لدي مايكرسوفت اوفيس.txt
