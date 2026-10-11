@@ -1,0 +1,11 @@
+{% if pagination.pages > 1 %}
+<nav class="pagination" aria-label="صفحات مجموعة العطور">
+  {% if pagination.has_prev %}<a class="pagination-direction" href="{{ page_url(pagination.prev_num) }}" rel="prev" aria-label="الصفحة السابقة">السابق</a>{% endif %}
+  {% for number in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% if number %}
+      {% if number == pagination.page %}<span aria-current="page" aria-label="الصفحة {{ number }}، الحالية">{{ number }}</span>{% else %}<a href="{{ page_url(number) }}" aria-label="الصفحة {{ number }}">{{ number }}</a>{% endif %}
+    {% else %}<span class="pagination-gap" aria-hidden="true">…</span>{% endif %}
+  {% endfor %}
+  {% if pagination.has_next %}<a class="pagination-direction" href="{{ page_url(pagination.next_num) }}" rel="next" aria-label="الصفحة التالية">التالي</a>{% endif %}
+</nav>
+{% endif %}
